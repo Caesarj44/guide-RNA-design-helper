@@ -22,8 +22,6 @@ from openpyxl.drawing.image import Image
 import openpyxl
 
 '''
-https://habr.com/ru/articles/757112/ десктоп приложение библиотека pywinstyles
-
 выгрузка данных из RNAfold библиотекой ViennaRNA https://viennarna.readthedocs.io/en/latest/getting_started.html
 программа написана в лаборатории биоинженерии растений ИЦИГ СО РАН
 
