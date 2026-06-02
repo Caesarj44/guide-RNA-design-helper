@@ -19,7 +19,6 @@ import openpyxl
 сборка в exe с помощью python -m auto_py_to_exe
 '''
 
-
 @dataclass
 class gRNA_sequence():
     sequence : str 
@@ -43,11 +42,19 @@ class gRNA_sequence():
     restriction_sites : list = ()
     total_score : int = 0
 
+
+
+# class TabView(CTk.CTkTabview):
+#     def __init__(self):
+#         self.add('анализ CRISPOR')
+
+
+
 class App(CTk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title('gRNA helper')
+        self.title('guide RNA design helper')
         self.geometry('800x400')
         self.resizable(width= False, height= False)
 
@@ -74,7 +81,7 @@ class App(CTk.CTk):
         self.input_RNA_tail_seq_frame = CTk.CTkEntry(master = self, width= 250, height= 20, placeholder_text = 'GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT')
         self.input_RNA_tail_seq_frame.grid(row = 2, column = 1, padx=(10,20),pady =(10,20), sticky = "ew",columnspan = 2 )
 
-    def programm_is_done(self,path_to_result):
+    def programm_is_done(self,path_to_result): #появление окна с сообщением, что программа закончила работу
         notion = CTk.CTkToplevel()
         notion.title("Сообщение")
         notion.geometry("350x150")
@@ -85,20 +92,20 @@ class App(CTk.CTk):
         button = CTk.CTkButton(notion, text="OK", command=notion.destroy)
         button.pack(pady=10)
 
-    def choose_file(self,grid_to_place):
+    def choose_file(self,grid_to_place): #открытие окна с выбором файла
         choosen_file = filedialog.askopenfilename(title="Выберите файл", filetypes=[("Все файлы", "*.*")])
         grid_to_place.delete(0, "end")
         grid_to_place.insert(0, choosen_file)
 
-    def GC_structure(self, sequence):
+    def GC_structure(self, sequence): #определение ГЦ состава
         gc_c = sequence.count('G') + sequence.count('C')
         gc_f = int(round(gc_c / len(sequence)*100,0))
         gc_c_10_20 = sequence[9:20].count('G') + sequence[9:20].count('C')
         last_four_nuc = sequence[16:20].count('A') + sequence[16:20].count('G')
         return(gc_c_10_20, gc_f,last_four_nuc)
 
-    def RNA_2D_structure(self, sequence,PAM_sequence, gRNA_tail_sequence): #создание svg картинки вторичной структуры gRNA
-        sequence = sequence + PAM_sequence + gRNA_tail_sequence
+    def RNA_2D_structure(self, sequence, gRNA_tail_sequence): #создание svg картинки вторичной структуры gRNA
+        sequence = sequence + gRNA_tail_sequence
         fc = RNA.fold_compound(sequence)
         structure, energy = fc.mfe()
         
@@ -107,8 +114,8 @@ class App(CTk.CTk):
 
         return tDs
     
-    def stick_and_dots(self,sequence,PAM_sequence, gRNA_tail_sequence): #создание модели шпилек gRNA
-        sequence = sequence + PAM_sequence + gRNA_tail_sequence
+    def stick_and_dots(self,sequence, gRNA_tail_sequence): #создание модели шпилек gRNA
+        sequence = sequence + gRNA_tail_sequence
         fc  = RNA.fold_compound(sequence)
         ss = fc.mfe()
 
@@ -128,7 +135,7 @@ class App(CTk.CTk):
             ws.add_image(img,cell_to_add)
             workbook.save(path_to_file + 'with_images_'+ file_to_place + '.xlsx')
 
-    def csv_to_dict(self,path_to_csv):
+    def csv_to_dict(self,path_to_csv): #преобразование cvs в словарь (для настроек)
         dict_res = {}
         with open(path_to_csv, 'r',encoding='utf-8') as file:
             comma = csv.reader(file)
@@ -142,18 +149,16 @@ class App(CTk.CTk):
     def start_code_by_button(self):
         self.main_part()
 
-    if not os.path.exists('download/'):
+    if not os.path.exists('download/'): #создание папки для файлов с CRISPOR
         os.makedirs('download/',exist_ok=True)   
 
     def main_part(self):     
-        self.directory_to_input = 'download/'
-        self.path_to_input_file = self.to_input_file_frame.get()
-
+        self.path_to_input_file = self.to_input_file_frame.get() #получение пути к файлу от CRISPOR
         
-        self.file_name = os.path.basename(self.path_to_input_file)
+        self.file_name = os.path.basename(self.path_to_input_file) #преобразование ссылки в название файла
         self.file_name = os.path.splitext(self.file_name)[0]
         print(f'self.file_name: {self.file_name}')
-        self.main_directory_to_export = self.file_name + '/'
+        self.main_directory_to_export = self.file_name + '/' #создание пути к файлу с результатами работы
         print(f'self.main_directory_to_export: {self.main_directory_to_export}')
 
         self.default_configs = {
@@ -186,35 +191,32 @@ class App(CTk.CTk):
             'PAMs_C': 1
             }
 
-        if not os.path.exists('configs.csv'):
+        if not os.path.exists('configs.csv'): #настройки
             with open('configs.csv', 'w', newline='', encoding='utf-8') as file:
                 cfg = csv.writer(file)
                 for key, value in self.default_configs.items():
                     cfg.writerow([key, value])       
 
-        if self.configs_path.get() == '':
+        self.path =  self.path_to_input_file
+
+        if self.configs_path.get() == '': #если настройки не выбраны, то используются настройки по умолчанию
             self.configs = self.default_configs
         else:
             self.configs = self.csv_to_dict(self.configs_path.get())
 
-        if not os.path.exists(self.main_directory_to_export):
+        if not os.path.exists(self.main_directory_to_export): #если папка с выводом результатов отсутствует, то она создаётся
             os.makedirs(self.main_directory_to_export,exist_ok=True)
-        if not os.path.exists(self.main_directory_to_export + '/png'):
+        if not os.path.exists(self.main_directory_to_export + '/png'): #создание подпапки с png
             os.makedirs(self.main_directory_to_export + '/png',exist_ok=True)
 
-        if  self.path_to_input_file == '': #для разработки. если ничего не задавать в поле названия файла, то откроется 'файл по умолчанию'
-            self.path = self.directory_to_input + 'guides_2xLoxPafterCre_pz9Athaliana-unknownLoc.xls'
-        else:
-            self.path =  self.path_to_input_file
-
-        if self.input_RNA_tail_seq_frame.get() == '':
+        if self.input_RNA_tail_seq_frame.get() == '': #если хвост не задан, то используется хвост по умолчанию
             self.gRNA_tail = 'GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'
         else:
             self.gRNA_tail = self.input_RNA_tail_seq_frame.get()
-
+        
         print(f'Result saved at: {self.path}')
         print(f'Chosen gRNA tail: {self.gRNA_tail}')
-        self.raw_seq_DF = pd.read_excel(self.path, skiprows=8)
+        self.raw_seq_DF = pd.read_excel(self.path, skiprows=8) #пропуск первых 8 строчек сырых данных
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.width', None)
@@ -222,23 +224,23 @@ class App(CTk.CTk):
         self.sequences_list = list()
         for i, row in self.raw_seq_DF.iterrows():
             self.current_gRNA_w_PAM = row['targetSeq']
-            self.current_gRNA_wo_PAM = row['targetSeq'][0:20]
+            self.current_gRNA_spacer = row['targetSeq'][0:20]
             self.current_PAM = self.current_gRNA_w_PAM[20:24]
 
-            self.current_gRNA_seq = gRNA_sequence(sequence=self.current_gRNA_wo_PAM,
-                                                  PAM= self.current_PAM,
-                                                  GC_count_10to20= self.GC_structure(self.current_gRNA_wo_PAM)[0],
-                                                  GC_freq=self.GC_structure(self.current_gRNA_wo_PAM)[1],
-                                                  last_four_pur=self.GC_structure(self.current_gRNA_wo_PAM)[2])
+            self.current_gRNA_seq = gRNA_sequence(sequence=self.current_gRNA_spacer,
+                                                PAM= self.current_PAM,
+                                                GC_count_10to20= self.GC_structure(self.current_gRNA_spacer)[0],
+                                                GC_freq=self.GC_structure(self.current_gRNA_spacer)[1],
+                                                last_four_pur=self.GC_structure(self.current_gRNA_spacer)[2])
             
             if str(row['#guideId']).endswith('forw'):
-                self.current_gRNA_seq.strain = self.configs['forv_strain']
+                self.current_gRNA_seq.strain = 'sense'
                 self.current_gRNA_seq.total_score += self.configs['forv_strain']
             elif str(row['#guideId']).endswith('rev'):
-                self.current_gRNA_seq.strain = self.configs['rev_strain']
+                self.current_gRNA_seq.strain = 'antisense'
                 self.current_gRNA_seq.total_score += self.configs['rev_strain']                
 
-            if 'TTTT' in  self.current_gRNA_wo_PAM:
+            if 'TTTT' in  self.current_gRNA_spacer:
                 self.current_gRNA_seq.oligoT = 666
 
             if self.current_gRNA_seq.last_four_pur == 1:
@@ -250,31 +252,31 @@ class App(CTk.CTk):
             elif self.current_gRNA_seq.last_four_pur == 4:
                 self.current_gRNA_seq.total_score += self.configs['last_four_pur_4']
 
-            if self.current_gRNA_wo_PAM[2:3] != 'C': #цитозин не желателен в 3 положении
+            if self.current_gRNA_spacer[2:3] != 'C': #цитозин не желателен в 3 положении
                 self.current_gRNA_seq.C_not_at_3 = self.configs['C_not_at_3']   
                 self.current_gRNA_seq.total_score += self.configs['C_not_at_3'] 
 
-            if self.current_gRNA_wo_PAM[15:16] != 'G': #гуанин нежелателен в 16 положении
+            if self.current_gRNA_spacer[15:16] != 'G': #гуанин нежелателен в 16 положении
                 self.current_gRNA_seq.G_not_at_16 = self.configs['G_not_at_16'] 
                 self.current_gRNA_seq.total_score += self.configs['G_not_at_16']  
 
-            if self.current_gRNA_wo_PAM[15:16] == 'C': #в 16 положении желателен цитозин
+            if self.current_gRNA_spacer[15:16] == 'C': #в 16 положении желателен цитозин
                 self.current_gRNA_seq.C_at_16 = self.configs['C_at_16'] 
                 self.current_gRNA_seq.total_score += self.configs['C_at_16']  
 
-            if self.current_gRNA_wo_PAM[19:20] == 'G' or self.current_gRNA_wo_PAM[19:20] == 'A': #аденин или гуанин желателен в 20 положении
+            if self.current_gRNA_spacer[19:20] == 'G' or self.current_gRNA_spacer[19:20] == 'A': #аденин или гуанин желателен в 20 положении
                 self.current_gRNA_seq.G_or_A_at_20 = self.configs['G_or_A_at_20']
                 self.current_gRNA_seq.total_score += self.configs['G_or_A_at_20'] 
 
-            if self.current_gRNA_wo_PAM[17:18] == 'C': #цитозин желателен в 18 положении
+            if self.current_gRNA_spacer[17:18] == 'C': #цитозин желателен в 18 положении
                 self.current_gRNA_seq.C_at_18 = self.configs['C_at_18'] 
                 self.current_gRNA_seq.total_score += self.configs['C_at_18']  
 
-            if self.current_gRNA_wo_PAM[13:14] != 'G': #гуанин не желателен в 14 положении
+            if self.current_gRNA_spacer[13:14] != 'G': #гуанин не желателен в 14 положении
                 self.current_gRNA_seq.G_not_at_14 = self.configs['G_not_at_14']
                 self.current_gRNA_seq.total_score += self.configs['G_not_at_14'] 
 
-            if 'GCC' in self.current_gRNA_wo_PAM[15:20] : #GCC не должно быть на участке 16-20
+            if 'GCC' in self.current_gRNA_spacer[15:20] : #GCC не должно быть на участке 16-20
                 self.current_gRNA_seq.GCC_not_at_16to20 = self.configs['GCC_not_at_16to20']
 
             if self.current_PAM[0:1] == 'G': #в PAM на месте N желателен гуанин или цитозин и нежелателен тимин
@@ -290,7 +292,8 @@ class App(CTk.CTk):
                 self.current_gRNA_seq.PAMs_N = self.configs['PAMs_A']
                 self.current_gRNA_seq.total_score += self.configs['PAMs_A']            
 
-            self.sticks_structure = self.stick_and_dots(self.current_gRNA_wo_PAM, self.current_PAM, self.gRNA_tail)#создание модели шпильки
+            self.sticks_structure = self.stick_and_dots(self.current_gRNA_spacer, self.gRNA_tail)#создание модели шпильки
+            print(self.sticks_structure)
 
             if self.sticks_structure[0][19] == '(' or self.sticks_structure[0][19] == ')': #20 нуклеотид очень желательно не должен быть связан
                 self.current_gRNA_seq.access_18_to_20 += 0
@@ -310,19 +313,19 @@ class App(CTk.CTk):
                 self.current_gRNA_seq.total_score += self.configs['access_to_18'] 
 
             print(f'{i}\n{self.sticks_structure[0][0:20]}\n{self.current_gRNA_seq.sequence}')
-            if '(((((((' in self.sticks_structure[0][0:20]: #проверка нет ли 7 связанных подряд
+            if '((((((((' in self.sticks_structure[0][0:20]: #проверка нет ли 8 связанных подряд
                 self.current_gRNA_seq.seven_links += self.configs['seven_links']
 
-            if self.sticks_structure[0][0:20].count('(') + self.sticks_structure[0][0:20].count(')') >=12: #проверка нет ли 12 связанных вообще
+            if self.sticks_structure[0][0:20].count('(') + self.sticks_structure[0][0:20].count(')') >12: #проверка нет ли более 12 связанных вообще
                 self.current_gRNA_seq.twelve_links += self.configs['twelve_links']  
 
             '''
             следующая игра с удалением толькочто созданных svg файлов - костыль
             '''
-            self.RNA_2D_structure(self.current_gRNA_wo_PAM, self.current_PAM, self.gRNA_tail)
-            cairosvg.svg2png(url= self.current_gRNA_wo_PAM + self.current_PAM + self.gRNA_tail + '.svg',write_to= self.main_directory_to_export + '/png/' + str(i)+ '.png')
+            self.RNA_2D_structure(self.current_gRNA_spacer, self.gRNA_tail)
+            cairosvg.svg2png(url= self.current_gRNA_spacer + self.gRNA_tail + '.svg',write_to= self.main_directory_to_export + '/png/' + str(i)+ '.png')
             time.sleep(0.1)#сон 0.1 сек             
-            os.remove(self.current_gRNA_wo_PAM + self.current_PAM + self.gRNA_tail + '.svg') #удаление тысяч svg файлов
+            os.remove(self.current_gRNA_spacer + self.gRNA_tail + '.svg') #удаление тысяч svg файлов
 
 
             self.sequences_list.append(self.current_gRNA_seq) #расширение списка с классами последовательностей gRNA
