@@ -1,0 +1,16 @@
+QWidget {
+    background-color: #F5F5F5;
+    color: #000000;
+}
+QListWidget {
+    background-color: #E0E0E0;
+    border: none;
+}
+QListWidget::item:selected {
+    background-color: #2ABF9E;
+}
+QPushButton {
+    background-color: #E0E0E0;
+    padding: 6px;
+    border-radius: 4px;
+}

@@ -1,0 +1,48 @@
+LIGHT_STYLE = """
+QWidget {
+    background-color: #FFFFFF;
+    color: #000000;
+    padding: 0px;
+}
+QPushButton {
+    background-color: #E0E0E0;
+    color: #000000;
+    padding: 6px;
+    font-size: 18px;
+}
+"""
+
+DARK_STYLE = """
+QWidget {
+    background-color: #2B2B2B;
+    color: #FFFFFF;
+    padding: 0px;
+}
+QPushButton {
+    background-color: #444444;
+    color: #FFFFFF;
+    padding: 6px;
+    font-size: 18px;
+}
+"""
+
+
+
+QListWidget::item {
+    height: 50px;
+    text-align: center;
+    font-size: 12pt;
+    color:;
+    font-family: Ubuntu-Regular;
+    padding: 0px;
+    margin: 0px;
+}
+
+QListWidget::item:selected {
+    background-color: #2ABf9E;
+}
+
+QLabel {
+    background-color: #FFFFFF;
+    qproperty-alignment: AlignCenter;
+}
