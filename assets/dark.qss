@@ -1,17 +1,86 @@
+
 QWidget {
-    background-color: #2B2B2B;
-    color: #7FFFD4;
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 13px;
 }
-QListWidget {
-    background-color: #33373B;
-    border: none;
-}
-QListWidget::item:selected {
-    background-color: #2ABF9E;
-}
-QPushButton {
-    background-color: #444444;
-    color: #7FFFD4;
-    padding: 6px;
+
+QGroupBox {
+    background-color: #2a2a3c;
+    border: 1px solid #45475a;
     border-radius: 4px;
+    margin-top: 4px;
+    padding: 4px;
+    padding-top: 8px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 6px;
+    color: #89b4fa;
+}
+QGroupBox QLabel{
+    background-color: #2a2a3c;
+    color: #cdd6f4;
+}
+QGroupBox QCheckBox{
+    background-color: #2a2a3c;
+    color: #cdd6f4;
+}
+QGroupBox QPushButton {
+    background-color: #2a2a3c;
+    color: #a6e3a1;
+}
+QGroupBox QPushButton[class = 'delete'] {
+    background-color: #2a2a3c;
+    color: #e64553;
+}
+
+QComboBox::separator {
+    height: 2px;                    
+    background-color: #89b4fa;      /* цвет фона */
+    margin: 2px 2px;               
+}
+
+QTableView {
+    background-color: #2a2a3c;
+    alternate-background-color: #252536;
+    gridline-color: #45475a;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    selection-background-color: #89b4fa;
+    selection-color: #1e1e2e;
+}
+QHeaderView::section {
+    background-color: #1e1e2e;
+    color: #89b4fa;
+    border: none;
+    border-bottom: 2px solid #89b4fa;
+    padding: 8px;
+    font-weight: bold;
+}
+
+
+QLineEdit, QComboBox {
+    background-color: #252536;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #cdd6f4;
+}
+QLineEdit:focus, QComboBox:focus {
+    border-color: #89b4fa;
+}
+
+
+QScrollBar:vertical {
+    background: #1e1e2e;
+    width: 8px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background: #45475a;
+    border-radius: 4px;
+    min-height: 30px;
 }
