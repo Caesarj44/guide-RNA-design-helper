@@ -311,8 +311,8 @@ class CrisporAnalyzerPage(QWidget):
 
             if grna_data.oligoT == True:
                 self.crispor_table.item(row_index, COL_SEQ).setBackground(COLOR_LOW_DOENCH)
-            if grna_data.oligoG == True:
-                self.crispor_table.item(row_index, COL_SEQ).setBackground(COLOR_LOW_DOENCH)
+            # if grna_data.oligoG == True:
+            #     self.crispor_table.item(row_index, COL_SEQ).setBackground(COLOR_LOW_DOENCH)
             # if grna_data.oligoC == True:
             #     self.crispor_table.item(row_index, COL_SEQ).setBackground(COLOR_LOW_DOENCH)
             if grna_data.mfe_bad == True:

@@ -6,6 +6,8 @@ test.py
 
 # Автогенерированные файлы программы
 output/
+*.xlsx
+*.xls
 
 # IDE
 .vscode/

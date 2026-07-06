@@ -22,13 +22,13 @@ class HomePage(QWidget):
         group_info = QGroupBox('Основная информация о программе')
         form_info = QFormLayout(group_info)
         self.program_name_and_version = QLabel()
-        self.program_name_and_version.setText('GRDH v1.1.1\nguide RNA design helper')
+        self.program_name_and_version.setText('GRDH v1.1.2\nguide RNA design helper')
         form_info.addRow(self.program_name_and_version)
         
         group_authors = QGroupBox('Авторы')
         form_authors = QFormLayout(group_authors)
         self.authors = QLabel()
-        self.authors.setText('Лукин А.Д.\nФТА???\nПНВ???\nЛаборатория биоинженерии растений ИЦИГ СО РАН')
+        self.authors.setText('Лукин А.Д.\nФранкевич Т.А.\nПермякова Н.В.\nЛаборатория биоинженерии растений ИЦИГ СО РАН')
         form_authors.addRow(self.authors)
 
         root_layout.addWidget(group_info)

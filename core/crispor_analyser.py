@@ -63,12 +63,12 @@ GRNA_DEFAULT_CONFIGS = {
     'last_four_pur_2': 0.5,
     'last_four_pur_3': 0.75,
     'last_four_pur_4': 1,
-    'access_to_20': 2,
-    'access_to_19': 1,
-    'access_to_18': 1,
-    'access_to_51' :1,
-    'access_to_52' :1,
-    'access_to_53' :1,
+    'access_to_20': 4,
+    'access_to_19': 2,
+    'access_to_18': 2,
+    'access_to_51' :2,
+    'access_to_52' :2,
+    'access_to_53' :2,
     'eight_links': True,
     'twelve_links': True,
     'C_not_at_3': 0.5,
@@ -96,6 +96,7 @@ def grna_analyzer(
     mfe: float,
     configs: dict,
     enzymes: list,
+    all_target_seq : str,
     doench_threshold: float = 50.0,
 ):
     grna_record = GRNA_data(
@@ -221,12 +222,47 @@ def grna_analyzer(
         grna_record.PAMs_N = configs['PAMs_A']
         grna_record.total_score += grna_record.PAMs_N
 
-
-
-    grna_record.restriction_sites = check_restriction_sites(spacer=spacer,enzymes=enzymes)
+    near_spacer_end = found_near_spacer_end_sequence(spacer=spacer,target_seq=all_target_seq)
+    grna_record.restriction_sites = check_restriction_sites(spacer=near_spacer_end,enzymes=enzymes)
 
     return grna_record
 
+def found_near_spacer_end_sequence(spacer, target_seq):
+    file_path = 'guides_2xLoxPafterCre_pz9Athaliana-unknownLoc.xls'
+    crispor_df = pd.read_excel(file_path)
+
+    pair = {
+        'A' : 'T',
+        'T' : 'A',
+        'U' : 'A',
+        'G' : 'C',
+        'C' : 'G'
+    }
+    spacer_rev = ''
+    target_seq = crispor_df.iloc[0,1]
+    target_seq_len = len(target_seq)
+    spacer_len = len(spacer)
+
+    for i in range(spacer_len ):
+        spacer_rev += pair[spacer[-i-1]]
+
+    is_found = False
+    while not is_found:
+        for shift in range(0,target_seq_len - (spacer_len + 1),1):
+            #print(target_seq[shift:shift+spacer_len])
+            current_shift = target_seq[shift:shift+spacer_len]
+            if spacer == current_shift:
+                print('___FOUND___')
+                is_found = True
+                coords = (shift,shift+spacer_len)
+            elif spacer_rev == current_shift:
+                print('REV___FOUND___REV')
+                is_found = True
+                coords = (shift,shift+spacer_len)
+
+    near_spacer_end = target_seq[coords[1]-13:coords[1]+7]
+    print('Поиск сайтов рестрикции в:', near_spacer_end)
+    return near_spacer_end
 
 def _gc_structure(sequence):
     print('start computing gc....')
@@ -299,6 +335,7 @@ class AnalyzerMachine(QObject):
             return
 
         crispor_data_frame = pd.read_excel(self.crispor_path,skiprows=8)
+        all_target_seq = pd.read_excel(self.crispor_path).iloc[0,1]
         enzymes = get_default_restriction_db()
 
         grna_count = len(crispor_data_frame)
@@ -346,7 +383,8 @@ class AnalyzerMachine(QObject):
                 png_path = png_path,
                 strand=strand,
                 doench16=doench16,
-                enzymes=enzymes
+                enzymes=enzymes,
+                all_target_seq=all_target_seq
             )
             print('trying appending...')
             grna_result_list.append(grna_result)

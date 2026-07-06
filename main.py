@@ -22,8 +22,8 @@ def main():
     )
 
     app = QApplication(sys.argv)
-    app.setApplicationName('guide RNA design helper v1.1.1')
-    app.setApplicationVersion('1.1.1')
+    app.setApplicationName('guide RNA design helper v1.1.2')
+    app.setApplicationVersion('1.1.2')
     app.setOrganizationName('Nerv')
 
     cfg = load_configs()
