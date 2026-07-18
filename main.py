@@ -7,7 +7,6 @@ from PySide6.QtCore import Qt
 from gui.main_window_page import MainPage
 from core.config_manager import load_configs, load_style
 
-# Добавляем корень проекта в sys.path (для запуска из любой директории)
 ROOT = Path(__file__).parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -22,8 +21,8 @@ def main():
     )
 
     app = QApplication(sys.argv)
-    app.setApplicationName('guide RNA design helper v1.1.2')
-    app.setApplicationVersion('1.1.2')
+    app.setApplicationName('guide RNA design helper v1.2.0')
+    app.setApplicationVersion('1.2.0')
     app.setOrganizationName('Nerv')
 
     cfg = load_configs()

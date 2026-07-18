@@ -5,7 +5,10 @@ from functools import lru_cache
 
 
 IUPAC_MAP = {
-    'A': 'A', 'T': 'T', 'G': 'G', 'C': 'C',
+    'A': 'A',
+    'T': 'T',
+    'G': 'G',
+    'C': 'C',
     'R': '[AG]',   # puRine
     'Y': '[CT]',   # pYrimidine
     'S': '[GC]',   # Strong
@@ -16,10 +19,9 @@ IUPAC_MAP = {
     'D': '[AGT]',  # not C
     'H': '[ACT]',  # not G
     'V': '[ACG]',  # not T
-    'N': '[ACGT]', # aNy
+    'N': '[ATGC]', # aNy
 }
 
-# Паттерн нотации вырожденного сайта разреза: (16/14) или (-5/-1)
 _CLEAVAGE_NOTATION = re.compile(r'\(\s*-?\d+\s*/\s*-?\d+\s*\)')
 
 
@@ -75,15 +77,38 @@ def load_restriction_db(csv_path: str | Path) -> list[dict]:
     return enzymes
 
 
-def check_restriction_sites(spacer: str, enzymes: list[dict]) -> list[str]:
-    spacer_upper = spacer.upper()
+def check_restriction_sites(
+        sequence: str,
+        enzymes: list[dict],
+        target_seq : str,
+        radius = [100,250,500]
+        ) -> list[str]:
+    sequence_upper = sequence.upper()
     found = []
+    print('тут ищутся сайты рестрикции',sequence_upper)
     for enzyme in enzymes:
-        if enzyme['pattern'].search(spacer_upper):
-            found.append(enzyme['name'])
+        
+        if enzyme['pattern'].search(sequence_upper):
+            current_enzyme = enzyme['name']
+
+            start = target_seq.find(sequence_upper)
+            center = start + len(sequence_upper) // 2
+            target_seq_len = len(target_seq)
+
+            current_enzyme_w_count = current_enzyme + '('
+            for i, rad in enumerate(radius):
+                window_start = max(0, center - rad)
+                window_end = min(target_seq_len, center + rad)
+                window = target_seq[window_start:window_end]
+                current_count = len(enzyme['pattern'].findall(window))
+                current_enzyme_w_count += str(current_count)
+                if i + 1 != len(radius):
+                    current_enzyme_w_count += '/'
+
+            current_enzyme_w_count += ')'
+            found.append(current_enzyme_w_count)
+
     return found
-
-
 
 @lru_cache(maxsize=1)
 def get_default_restriction_db() -> list[dict]:

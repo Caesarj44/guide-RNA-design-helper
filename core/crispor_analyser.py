@@ -15,11 +15,19 @@ from core.RNA_structure_plot import plot_rna
 
 @dataclass
 class GRNA_data(): 
-    sequence : str 
+    sequence : str
     PAM : str
     strand : int = 0
     gc_freq : int = 0 
     doench_16 : float = 0.0
+    start : int = 0
+    end : int = 20
+    indx : int = 0
+    disqualified : bool = False
+
+    #TO DO
+    #recalculate scores T/C in the end of spacer
+    #https://pmc.ncbi.nlm.nih.gov/articles/PMC6352712/
 
     png_2d_path : str = ''
     dot_bracked_structure : str = ''
@@ -55,7 +63,7 @@ GRNA_DEFAULT_CONFIGS = {
     'oligoT': True,
     'oligoG' : True,
     'oligoC' : True,
-    'forv_strain': 0,
+    'forw_strain': 0,
     'rev_strain': 1,
     'GC_freq': 0,
     'GC_count_10to20': 0,
@@ -84,6 +92,23 @@ GRNA_DEFAULT_CONFIGS = {
     'PAMs_C': 1
 }
 
+COMPLINETARY_MAP = {
+    'A' : 'T',
+    'T' : 'A',
+    'G' : 'C',
+    'C' : 'G',
+    'R' : 'Y',
+    'Y' : 'R',
+    'S' : 'S',
+    'W' : 'W',
+    'K' : 'M',
+    'M' : 'K',
+    'B' : 'V',
+    'V' : 'B',
+    'D' : 'H',
+    'H' : 'D',
+    'N' : 'N' 
+}
 
 def grna_analyzer(
     spacer: str,
@@ -96,29 +121,37 @@ def grna_analyzer(
     mfe: float,
     configs: dict,
     enzymes: list,
-    all_target_seq : str,
+    target_seq : str,
+    start : int ,
+    end : int,
+    indx : int = 0,
     doench_threshold: float = 50.0,
 ):
+    print('initialise grna_analyzer')
     grna_record = GRNA_data(
         sequence= spacer,
+        start=start,
+        end=end,
         PAM=pam,
         doench_16= doench16,
         png_2d_path = png_path,
         dot_bracked_structure=structure_dot,
         mfe=mfe,
+        indx=indx
 
         
     )
     print(grna_record.doench_16, 'grna_record')
-    if strand == 'forv':
-        grna_record.strand = configs['forv_strain']
-        grna_record.total_score += grna_record.strand
+    if strand == 'forw':
+        grna_record.strand = '+'
+        grna_record.total_score += configs['forw_strain']
     elif strand =='rev':
-        grna_record.strand = configs['rev_strain']
-        grna_record.total_score += grna_record.strand
+        grna_record.strand = '-'
+        grna_record.total_score += configs['rev_strain']
         
-    grna_record.gc_count_10to20, grna_record.gc_freq, grna_record.last_four_pur = _gc_structure(spacer)
+    grna_record.gc_count_10to20, grna_record.gc_freq, grna_record.last_four_pur = _gc_structure(grna_record.sequence)
 
+    print('Start computinc OTS...')
     if configs['min_gc'] <= grna_record.gc_freq * 100 <= configs['max_gc']:
         grna_record.total_score += configs['gc_in_range']
 
@@ -222,15 +255,14 @@ def grna_analyzer(
         grna_record.PAMs_N = configs['PAMs_A']
         grna_record.total_score += grna_record.PAMs_N
 
-    near_spacer_end = found_near_spacer_end_sequence(spacer=spacer,target_seq=all_target_seq)
-    grna_record.restriction_sites = check_restriction_sites(spacer=near_spacer_end,enzymes=enzymes)
+    print('Searching for near_spacer_end_seq')
+    near_spacer_end = found_near_spacer_end_sequence(spacer=spacer,target_seq=target_seq)
+    print('Searching for restrictases...')
+    grna_record.restriction_sites = check_restriction_sites(sequence=near_spacer_end,enzymes=enzymes,target_seq=target_seq)
 
     return grna_record
 
 def found_near_spacer_end_sequence(spacer, target_seq):
-    file_path = 'guides_2xLoxPafterCre_pz9Athaliana-unknownLoc.xls'
-    crispor_df = pd.read_excel(file_path)
-
     pair = {
         'A' : 'T',
         'T' : 'A',
@@ -239,7 +271,6 @@ def found_near_spacer_end_sequence(spacer, target_seq):
         'C' : 'G'
     }
     spacer_rev = ''
-    target_seq = crispor_df.iloc[0,1]
     target_seq_len = len(target_seq)
     spacer_len = len(spacer)
 
@@ -248,8 +279,8 @@ def found_near_spacer_end_sequence(spacer, target_seq):
 
     is_found = False
     while not is_found:
+        counter = 0
         for shift in range(0,target_seq_len - (spacer_len + 1),1):
-            #print(target_seq[shift:shift+spacer_len])
             current_shift = target_seq[shift:shift+spacer_len]
             if spacer == current_shift:
                 print('___FOUND___')
@@ -259,9 +290,10 @@ def found_near_spacer_end_sequence(spacer, target_seq):
                 print('REV___FOUND___REV')
                 is_found = True
                 coords = (shift,shift+spacer_len)
-
-    near_spacer_end = target_seq[coords[1]-13:coords[1]+7]
+            counter +=1
+    near_spacer_end = target_seq[coords[1]-11:coords[1]+5]
     print('Поиск сайтов рестрикции в:', near_spacer_end)
+    print('Спейсер ',spacer)
     return near_spacer_end
 
 def _gc_structure(sequence):
@@ -272,8 +304,12 @@ def _gc_structure(sequence):
     last_four_nuc = sequence[16:20].count('A') + sequence[16:20].count('G')
     return(gc_c_10_20, gc_f,last_four_nuc)
 
+def _reverse_compliment(sequence):
+    reversed_seq = ''
+    for i in sequence:
+        reversed_seq = COMPLINETARY_MAP[i] + reversed_seq
+    return reversed_seq
 
-#создание svg картинки вторичной структуры gRNA
 def compute_rna_2d_structure(
         sequence: str,
         gRNA_tail_sequence:str,
@@ -282,14 +318,17 @@ def compute_rna_2d_structure(
         ):
     print('start computing 2d structure....')
     full_seq = sequence + gRNA_tail_sequence
+    full_seq = full_seq.replace('T','U')
     fc = RNA.fold_compound(full_seq)
-    dot_bracked_structure, mfe = fc.mfe()
+    _, mfe = fc.mfe()
+    fc.pf()
+    dot_bracked_structure, mea_score = fc.MEA()
 
     output_dir=Path(output_dir)
     output_dir.mkdir(parents = True,exist_ok = True)
     png_path = str(output_dir / f'{index+1}.png')
     
-    plot_rna(full_seq,dot_bracked_structure,png_path)
+    plot_rna(full_seq,dot_bracked_structure,png_path,show_indices=True)
 
     return (png_path, dot_bracked_structure, float(mfe))
 
@@ -301,19 +340,25 @@ class AnalyzerMachine(QObject):
     progress = Signal(int)
     def __init__(
         self,
-        crispor_path: str,
         grna_tail: str,
         output_dir: str,
+        type_of_machine : str,
         configs: dict | None = None,
         doench_border: int = 50,
+        crispor_path: str = '',
+        input_grna_data_frame : pd.DataFrame =None,
+        target_seq :str = '',
     ):
         super().__init__()
+        self.type_of_machine=type_of_machine
         self.crispor_path = crispor_path
         self.grna_tail = grna_tail
         self.output_dir = output_dir
         configs = configs or GRNA_DEFAULT_CONFIGS.copy()
         self.doench_threshold = doench_border
         self._cancelled = False
+        self.input_grna_data_frame = input_grna_data_frame
+        self.target_seq = target_seq
 
     def cancel(self):
         self._cancelled = True
@@ -327,39 +372,61 @@ class AnalyzerMachine(QObject):
 
     def _run_analysis(self):
         print('start analysis....')
-        if not self.crispor_path:
-            self.error_occurred.emit("Путь к файлу не найден")
-            return
-        if not Path(self.crispor_path).exists():
-            self.error_occurred.emit('Ошибка, Выбранный файл не существует')
-            return
 
-        crispor_data_frame = pd.read_excel(self.crispor_path,skiprows=8)
-        all_target_seq = pd.read_excel(self.crispor_path).iloc[0,1]
         enzymes = get_default_restriction_db()
 
-        grna_count = len(crispor_data_frame)
+        grna_count = len(self.input_grna_data_frame)
         grna_result_list = []
+        print(self.input_grna_data_frame)
 
-        for i, row in crispor_data_frame.iterrows():
+        for i, row in self.input_grna_data_frame.iterrows():
             if self._cancelled:
                     return
-            print(f'analysis row {i}...')
-            target_seq = str(row['targetSeq'])
-            print('finding spacer')
-            spacer = target_seq[:20]
-            print('finding pam')
-            pam = target_seq[20:24]
-            guide_id_plus_strand = str(row.get('#guideId',''))
-            guide_id = int(re.search(r"\d+", guide_id_plus_strand).group())
-            strand = re.search(r"[A-Za-z]+$", guide_id_plus_strand).group()
-            print(row["Doench '16-Score"])
+            
+            if self.type_of_machine == 'CRISPOR_analyzer':
+                print(f'analysis row {i}...')
+                crispor_target_seq = str(row['targetSeq'])
+                print('finding spacer')
+                spacer = crispor_target_seq[:20]
+                print('finding pam')
+                pam = crispor_target_seq[20:24]
+                guide_id_plus_strand = str(row.get('#guideId',''))
+                guide_id = int(re.search(r"\d+", guide_id_plus_strand).group())
+                strand = re.search(r"[A-Za-z]+$", guide_id_plus_strand).group()
+                
 
-            if row["Doench '16-Score"] == 'NotEnoughFlankSeq':
-                doench16 = 0
-            else:
-                doench16 = int(row["Doench '16-Score"])
-            print(doench16)
+                if strand == 'forw':
+                    start = self.target_seq.find(spacer)
+                    end = start + len(spacer)
+                else:
+                    rev_comp = _reverse_compliment(spacer)
+                    start = self.target_seq.find(rev_comp)
+                    end = start + len(spacer)
+                
+                if row["Doench '16-Score"] == 'NotEnoughFlankSeq':
+                    doench16 = 0
+                else:
+                    doench16 = int(row["Doench '16-Score"])
+
+            elif self.type_of_machine == 'Custom_searcher':
+                print(f'analysis row {i}...')
+                #print('finding spacer')
+                spacer = row['spacer']
+                #print(spacer)
+                #print('finding pam')
+                pam = row['pam']
+                #print(pam)
+                start = row['start']
+                end = row['end']
+                guide_id = i
+                #print(guide_id)
+                strand = 'forw' if row['strand'] == '+' else 'rev'
+                #print(strand)
+                if row['doench16'] == 'NotEnoughFlankSeq':
+                    doench16 = 0
+                else:
+                    doench16 = int(row['doench16'])
+                #print(doench16)
 
 
             print('trying compute 2d')
@@ -371,11 +438,13 @@ class AnalyzerMachine(QObject):
                 output_dir=self.output_dir,
                 index=i,
             )
-            # Анализ
-            print('trying analysis grna')
+
+            print('trying analysis grna...')
             grna_result = grna_analyzer(
                 spacer=spacer,
                 pam=pam,
+                start=start,
+                end=end,
                 guide_id=guide_id,
                 structure_dot=dot_bracket,
                 configs= GRNA_DEFAULT_CONFIGS,
@@ -384,7 +453,8 @@ class AnalyzerMachine(QObject):
                 strand=strand,
                 doench16=doench16,
                 enzymes=enzymes,
-                all_target_seq=all_target_seq
+                target_seq=self.target_seq,
+                indx=i+1
             )
             print('trying appending...')
             grna_result_list.append(grna_result)

@@ -1,0 +1,15 @@
+PySide6>=6.5.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+biopython>=1.81
+Pillow>=10.0.0
+requests>=2.31.0
+matplotlib>=3.8.0
+numpy>=1.24.0
+
+# ViennaRNA (RNA secondary structure prediction)
+# NOT available via pip — install
+# install via system package manager:
+#   apt install vienna-rna  (Debian/Ubuntu)
+#   pacman -S viennarna     (Arch)
+# Python bindings (RNA module) are included with the package.

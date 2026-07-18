@@ -17,6 +17,9 @@ from PySide6.QtWidgets import(
 from core.config_manager import load_configs,load_style,update_config
 from gui.tail_selector_combo_box import TailComboBox
 
+# from gui.main_window_page import MainPage
+# ASSETS = Path(__file__).parent.parent / "assets"
+
 class SettingsPage(QWidget):
     configs_changed = Signal(dict)
 
@@ -70,6 +73,12 @@ class SettingsPage(QWidget):
     def _apply_theme(self, is_dark: bool):
         assets = Path(__file__).parent.parent / 'assets'
         qss_file = 'dark.qss' if is_dark else 'light.qss'
+        # if is_dark:
+        #     MainPage().home_item.setIcon(ASSETS / 'cambodian_resort_var2.ico')
+        #     MainPage().settings_item.setIcon(ASSETS / 'gear_symmetry_var2.ico')
+        # if not is_dark:
+        #     MainPage().home_item.setIcon(ASSETS / 'cambodian_resort_var1.ico')
+        #     MainPage().settings_item.setIcon(ASSETS / 'gear_symmetry_var1.ico')
         style = load_style(str(assets / qss_file))
         QApplication.instance().setStyleSheet(style)
 

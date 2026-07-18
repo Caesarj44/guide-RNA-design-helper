@@ -11,18 +11,22 @@ DEFAULT_CONFIGS = {
         'doench_threshold': 50.0,
         'min_gc': 40,
         'max_gc': 70,
-        'selected_tail' : 'default_gRNA_tail',
+        'selected_tail' : 'SpCas9',
     },
     'preset_gRNA_tails':{
-        'default_gRNA_tail': (
-            'GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'),
-        'SpCas9':(
-            'GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'),
-        'SaCas9':(
-            'GTTTAAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT')
+        'SpCas9':{
+            'tail' : 'GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT',
+            'pam' : 'NGG',
+            'spacer_len' : 20,
+            'cut_distance' : '3'
+        },
     },
     'custom_gRNA_tails':{}
 }
+
+#Jinek et al. (Science, 2013)
+#GTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT
+
 
 def load_configs(section: str | None = None, key : str | None = None):
 
@@ -51,7 +55,6 @@ def load_configs(section: str | None = None, key : str | None = None):
     return data.get(section, {}).get(key)
 
 def save_configs(data: dict):
-    """ Сохранеие словаря CONFIGS_FILE в .json файл"""
     with open(CONFIGS_FILE, 'w', encoding='utf-8') as f:
         json.dump(data,f,indent=2, ensure_ascii=False)
 

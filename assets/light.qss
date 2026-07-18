@@ -1,16 +1,86 @@
 QWidget {
-    background-color: #F5F5F5;
+    background-color: #eff1f5;
     color: #000000;
 }
 QListWidget {
-    background-color: #E0E0E0;
+    background-color: #eff1f5;
     border: none;
 }
 QListWidget::item:selected {
-    background-color: #2ABF9E;
+    background-color: #eff1f5;
 }
 QPushButton {
-    background-color: #E0E0E0;
+    background-color: #eff1f5;
+    color: #40a02b;
     padding: 6px;
     border-radius: 4px;
 }
+
+QGroupBox QRadioButton {
+    background-color: #eff1f5;
+    color: #40a02b;
+}
+QGroupBox QPushButton[class = 'delete'] {
+    background-color: #eff1f5;
+    color: #e64553;
+}
+QGroupBox QPushButton[class = 'pairs'] {
+    background-color: #eff1f5;
+    color: #fe640b;
+}
+QGroupBox QPushButton[class = 'pairs']:checked{
+    background-color: #fe640b;
+    color: #eff1f5;
+}
+
+
+
+
+
+/* QComboBox::separator {
+    height: 2px;                    
+    background-color: #eff1f5;
+    margin: 2px 2px;               
+}
+
+QTableView {
+    background-color: #2a2a3c;
+    alternate-background-color: #252536;
+    gridline-color: #45475a;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    selection-background-color: #eff1f5;
+    selection-color: #1e1e2e;
+}
+QHeaderView::section {
+    background-color: #1e1e2e;
+    color: #eff1f5;
+    border: none;
+    border-bottom: 2px solid #eff1f5;
+    padding: 8px;
+    font-weight: bold;
+}
+
+
+QLineEdit, QComboBox {
+    background-color: #252536;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #cdd6f4;
+}
+QLineEdit:focus, QComboBox:focus {
+    border-color: #eff1f5;
+}
+
+
+QScrollBar:vertical {
+    background: #1e1e2e;
+    width: 8px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical {
+    background: #45475a;
+    border-radius: 4px;
+    min-height: 30px;
+} */

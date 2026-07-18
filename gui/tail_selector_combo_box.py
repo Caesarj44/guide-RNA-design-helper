@@ -38,8 +38,8 @@ class TailComboBox(QComboBox):
         self._custom_names.clear()
 
         # Пресеты
-        for name, seq in PRESET_TAILS.items():
-            self.addItem(name, seq)
+        for name,keys  in PRESET_TAILS.items():
+            self.addItem(f'{keys['spacer_len']}bp, {keys['pam']}, {name}')
         # Разделитель
         self.insertSeparator(self.count())
         # Кастомные 
@@ -137,6 +137,24 @@ class AddTailDialog(QDialog):
         )
         form.addRow('Последовательность:', self.seq_input)
 
+        self.pam_input = QLineEdit()
+        self.pam_input.setValidator(
+            QRegularExpressionValidator(QRegularExpression('^[ATGCRYSWKMBDHVNatgcryswkmbdhvn]*$'))
+        )
+        self.pam_input.setPlaceholderText('NGG')
+        form.addRow('PAM-сайт',self.pam_input)
+
+        self.spacer_len_input = QLineEdit()
+        self.spacer_len_input.setPlaceholderText('20')
+        form.addRow('Длина спейсера',self.spacer_len_input)
+
+        self.cut_site_input = QLineEdit()
+        self.cut_site_input.setPlaceholderText('3')
+        self.cut_site_input.setValidator(
+            QRegularExpressionValidator(QRegularExpression('^[0-9]$'))
+        )
+        form.addRow("Сайт разреза от 3' конца", self.cut_site_input)
+
         layout.addLayout(form)
 
         buttons = QDialogButtonBox(
@@ -155,13 +173,25 @@ class AddTailDialog(QDialog):
     def _validate_and_accept(self):
         name = self.name_input.text().strip()
         seq = self.seq_input.text().strip().upper()
+        pam = self.pam_input.text().strip().upper()
+        spacer_len = self.spacer_len_input.text().strip()
+        cut_site = self.cut_site_input.text().strip()
 
         if not name:
             self.name_input.setFocus()
             return
-        if not seq or not all(c in 'ATGC' for c in seq):
+        if not seq:
             self.seq_input.setFocus()
             return
+        if not pam:
+            self.pam_input.setFocus()
+            return
+        if not spacer_len:
+            self.spacer_len_input.setFocus()
+            return        
+        if not cut_site:
+            self.cut_site_input.setFocus()
+            return       
 
         self.accept()
 

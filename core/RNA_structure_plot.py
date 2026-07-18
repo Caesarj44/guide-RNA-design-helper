@@ -55,7 +55,6 @@ def parse_dot_bracket(structure: str) -> list[int]:
 
 @dataclass
 class Helix:
-    """Stem: list of (i, j) pairs, i increasing, j decreasing."""
     base_pairs: list[tuple[int, int]] = field(default_factory=list)
 
     @property
@@ -258,14 +257,10 @@ def plot_rna_structure(
     node_radius: float = 0.5,
     font_size: int = 8,
     show_indices: bool = False,
+    index_step: int = 10,
     title: str | None = None,
     figsize: tuple = (10, 10),
 ):
-    if len(sequence) != len(structure):
-        raise ValueError(
-            f"Sequence length ({len(sequence)}) != structure length ({len(structure)})"
-        )
-
     layout = compute_layout(structure)
     coords = layout.coords
     pairs = layout.pairs
@@ -302,10 +297,54 @@ def plot_rna_structure(
         ax.text(x, y, base, ha='center', va='center',
                 fontsize=font_size, zorder=3, fontweight='bold',
                 color='#222222')
-        if show_indices and (i % 10 == 0 or i == 0 or i == n - 1):
-            ax.text(x, y - node_radius - 0.45, str(i + 1),
-                    ha='center', va='center', fontsize=font_size * 0.7,
-                    color='#555555', zorder=3)
+
+    if show_indices:
+        label_gap = node_radius + 0.35
+        clear = node_radius + 0.15
+
+        for i in range(n):
+            if not (i % index_step == 0 or i == 0 or i == n - 1):
+                continue
+            x, y = coords[i]
+
+            has_prev = i > 0
+            has_next = i < n - 1
+            v1x, v1y = (coords[i - 1][0] - x, coords[i - 1][1] - y) if has_prev \
+                       else (coords[i + 1][0] - x, coords[i + 1][1] - y)
+            v2x, v2y = (coords[i + 1][0] - x, coords[i + 1][1] - y) if has_next \
+                       else (coords[i - 1][0] - x, coords[i - 1][1] - y)
+            l1 = math.hypot(v1x, v1y) or 1.0
+            l2 = math.hypot(v2x, v2y) or 1.0
+            v1x, v1y = v1x / l1, v1y / l1
+            v2x, v2y = v2x / l2, v2y / l2
+
+            bx, by = v1x + v2x, v1y + v2y
+            blen = math.hypot(bx, by)
+
+            if blen < 1e-9:
+                ux, uy = -v2y, v2x
+            else:
+                ux, uy = -bx / blen, -by / blen
+
+            fx, fy = -v1x, -v1y
+            right_x, right_y = fy, -fx
+            if ux * right_x + uy * right_y < 0:
+                ux, uy = -ux, -uy
+
+            off = label_gap
+            for _ in range(40):
+                lx, ly = x + ux * off, y + uy * off
+                if not any(j != i and math.hypot(coords[j][0] - lx,
+                                                coords[j][1] - ly) < clear
+                           for j in range(n)):
+                    break
+                off += 0.2
+
+            lx, ly = x + ux * off, y + uy * off
+            ax.text(lx, ly, str(i + 1),
+                    ha='center', va='center',
+                    fontsize=font_size,
+                    color='#000000', zorder=4)
 
     ax.set_aspect('equal')
     ax.axis('off')
@@ -326,6 +365,7 @@ def plot_rna(
     node_radius: float = 0.5,
     font_size: int = 7,
     show_indices: bool = False,
+    index_step: int = 10,
     title: str | None = None,
     figsize: tuple = (10, 10),
     dpi: int = 150,
@@ -334,7 +374,8 @@ def plot_rna(
     fig, ax = plot_rna_structure(
         sequence, structure,
         node_radius=node_radius, font_size=font_size,
-        show_indices=show_indices, title=title, figsize=figsize,
+        show_indices=show_indices, index_step=index_step,
+        title=title, figsize=figsize,
     )
     fig.savefig(output_path, dpi=dpi, bbox_inches='tight',
                 facecolor='none', transparent=True)

@@ -3,11 +3,14 @@ __pycache__/
 *.pyc
 *.pyo
 test.py
+compare_doench.py
 
-# Автогенерированные файлы программы
+# Автогенерированные файлы программы, файлы для анализа
 output/
 *.xlsx
 *.xls
+*.fasta
+configs.json
 
 # IDE
 .vscode/
@@ -16,6 +19,7 @@ output/
 # OS
 .DS_Store
 .directory
+grdh_dev.venv
 
 # ViennaRNA / cairosvg временные файлы
 *.svg
