@@ -31,7 +31,7 @@ Runs locally, with no server connection or execution queues.
 
 ### gRNA Scoring & Evaluation
 
-- **Doench 16 (Azimuth)** - cleavage efficiency; the model was extracted from the original Azimuth and reproduces its results bit-exactly
+- **Doench 16 (Azimuth)** - cleavage efficiency; the model was extracted from the original Azimuth
 - **OTS (Our Total Score)** - a custom score accounting for:
   - GC content
   - oligonucleotide repeats
