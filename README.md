@@ -153,7 +153,7 @@ Compared against **CRISPOR**, **CRISPR-P 2.0**, **CRISPRon**, **CRISPR DB**, **s
 
 **Laboratory of Plant Bioengineering, Institute of Cytology and Genetics, SB RAS (Novosibirsk, Russia)**
 
-The authors thank Markova S.A. for providing the icons.
+The authors thank Sophia A. Markova for providing the icons.
 
 ---
 
