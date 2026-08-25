@@ -96,7 +96,7 @@ Compared against **CRISPOR**, **CRISPR-P 2.0**, **CRISPRon**, **CRISPR DB**, **s
 | Feature | GRDH | CRISPOR | CRISPR-P 2.0 | CRISPRon | CRISPR DB | sgDesigner | RNAfold |
 |---|---|---|---|---|---|---|---|
 | Doench 16 (Azimuth) | + | + | - (Doench 14) | - | - | - | - |
-| gRNA secondary structure | + custom rendering | - | + ViennaRNA visualizer (dot-bracked structure only) | ⚠️ folding energy, no rendering | - | - | + (structure only) |
+| gRNA secondary structure | + custom rendering | - | + ViennaRNA visualizer (dot-bracked structure only) | folding energy, no rendering | - | - | + (structure only) |
 | Restriction sites | + 100/250/500 bp | + | + | - | - | - | - |
 | Interactive map | + zoom to nucleotides | - table only | + | - | - | - | - |
 | Off-target | - (planned) | + MIT + CFD | + | + CRISPRoff | - | - | - |
