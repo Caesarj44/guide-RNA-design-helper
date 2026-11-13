@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 *.pyo
+*.venv
 test.py
 compare_doench.py
 

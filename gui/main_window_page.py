@@ -19,6 +19,7 @@ from gui.settings_page import SettingsPage
 #from gui.CRISPOR_scoring_page import CrisporAnalyzerPage
 from gui.home_page import HomePage
 from gui.guide_parser_page import GuideParserPage
+from gui.td_structure_imager import TDStructureImager
 
 ASSETS = Path(__file__).parent.parent / "assets"
 print(ASSETS)
@@ -77,6 +78,13 @@ class MainPage(QWidget):
         self.guide_parser_item.setTextAlignment(Qt.AlignCenter)
         self.menu_widget.addItem(self.guide_parser_item)
 
+        self.td_structure_imager_item = QListWidgetItem()
+        self.td_structure_imager_item.setSizeHint(QSize(52,52))
+        self.td_structure_imager_icon_path = str(ASSETS / 'RNA_cal.ico')
+        self.td_structure_imager_item.setIcon(QIcon(self.td_structure_imager_icon_path))
+        self.td_structure_imager_item.setToolTip('2d imager')
+        self.td_structure_imager_item.setTextAlignment(Qt.AlignCenter)
+        self.menu_widget.addItem(self.td_structure_imager_item)
 
 
         #_add_gui_menu_item('home48x48.ico', 'Home')

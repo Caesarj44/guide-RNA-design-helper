@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass, field
 
 import matplotlib
-matplotlib.rcParams['font.family'] = ['Liberation Sans','DejaVu Sans']
+matplotlib.rcParams['font.family'] = ['DejaVu Sans']
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
@@ -23,6 +23,9 @@ BASE_COLORS = {
     'G': '#e57373',
     'C': '#64b5f6',
 }
+
+#good gRNA for test 
+#TGCTCCATACAAGCCAACCAGTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT
 
 def parse_dot_bracket(structure: str) -> list[int]:
     n = len(structure)

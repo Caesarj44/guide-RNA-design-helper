@@ -320,10 +320,10 @@ def compute_rna_2d_structure(
     full_seq = sequence + gRNA_tail_sequence
     full_seq = full_seq.replace('T','U')
     fc = RNA.fold_compound(full_seq)
-    _, mfe = fc.mfe()
+    dot_bracked_structure, mfe = fc.mfe()
     fc.pf()
-    dot_bracked_structure, mea_score = fc.MEA()
-
+    # dot_bracked_structure, mea_score = fc.MEA()
+    print(index+1, dot_bracked_structure)
     output_dir=Path(output_dir)
     output_dir.mkdir(parents = True,exist_ok = True)
     png_path = str(output_dir / f'{index+1}.png')
