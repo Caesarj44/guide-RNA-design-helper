@@ -72,6 +72,7 @@ class GuideParserPage(QWidget):
 
         self.start_parsing_button = QPushButton()
         self.start_parsing_button.setText('▶  Анализ')
+        self.start_parsing_button.setProperty('class','start')
         self.start_parsing_button.clicked.connect(self.start_parsing)
 
 
@@ -91,6 +92,7 @@ class GuideParserPage(QWidget):
 
         self.fasta_finder_button = QPushButton()
         self.fasta_finder_button.setText('Найти файл')
+        self.fasta_finder_button.setProperty('class','browse')
         self.fasta_finder_button.clicked.connect(self._browse_fasta_file)
         self.fasta_finder_button.setVisible(True)
 
@@ -112,6 +114,7 @@ class GuideParserPage(QWidget):
 
         self.crispor_finder_button = QPushButton()
         self.crispor_finder_button.setText('Найти файл')
+        self.crispor_finder_button.setProperty('class','browse')
         self.crispor_finder_button.setVisible(False)
         self.crispor_finder_button.clicked.connect(self._browse_crispor_file)
         
@@ -252,15 +255,11 @@ class GuideParserPage(QWidget):
         print(self.what_is_chosen)
         self.grna_table.setVisible(False)
         self.genome_browser.setVisible(False)
-        #to remove
-        #self.test_target_seq = 'TGGCAGGATATATTGTGGTGTAAACAAATTGACGCTTAGACAACTTAATAACACATTGCGGACGTTTTTAATGTACTGAATTAACGCCGAATTAATTCGGGGGATCTGGATTTTAGTACTGGATTTTGGTTTTAGGAATTAGAAATTTTATTGATAGAAGTATTTTACAAATACAAATACATACTAAGGGTTTCTTATATGCTCAACACATGAGCGAAACCCTATAGGAACCCTAATTCCCTTATCTGGGAACTACTCACACATTATTATGGAGAAACTCGAAGATCCGTCGAGCTTGTCGATCGACAGATCCGGTCGGCATCATAACTTCGTATAGCATACATTATACGAAGTTAAGCTTGGCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCGCCTTGCAGCACATCCCCCTTTCGCCAGCTGGCGTAATAGCGAAGAGGCCCGCACCGATCGCCCTTCCCAACAGTTGCGCAGCCTGAATGGCGAATGCTAGAGCAGCTTGAGCTTGGATCAGATTGTCGTTTCCCGCCTTCAGTTTAAACTATCAGTGTTTGACAGGATATATTGGCGGGTAAACCTAAGAGAAAAGAGCGTTTA'
+
 
         if self.what_is_chosen == 'custom_string':
-
-            #if self.custom_sequence_input.text():
             self.target_seq = self.custom_sequence_input.text()
-            #else:
-                #self.target_seq = self.test_target_seq
+
 
         elif self.what_is_chosen == 'fasta_file':
             if not self.fasta_file_path.text():
@@ -355,7 +354,7 @@ class GuideParserPage(QWidget):
             load_configs('preset_gRNA_tails', selected_name)
             or load_configs('custom_gRNA_tails', selected_name)
         )
-        if isinstance(cas, str):  # старый формат: сохраняли только последовательность
+        if isinstance(cas, str):
             cas = {'tail': cas, 'pam': 'NGG', 'spacer_len': 20, 'cut_distance': '3'}
         if cas is None:
             cas = load_configs('preset_gRNA_tails', 'SpCas9')

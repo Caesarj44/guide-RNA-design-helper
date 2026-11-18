@@ -74,6 +74,7 @@ class GrnaTableWidget(QWidget):
 
         self.export_to_excel_button = QPushButton('Экспорт в эксель')
         self.export_to_excel_button.clicked.connect(self._export_excel)
+        self.export_to_excel_button.setProperty('class','excel')
 
         self.pair_mode_button = QPushButton('Подбор пары')
         self.pair_mode_button.setCheckable(True)

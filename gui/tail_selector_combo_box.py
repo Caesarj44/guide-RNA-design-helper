@@ -109,7 +109,7 @@ class TailComboBox(QComboBox):
         data = self.itemData(idx)
         if data is None or data == _ADD_CUSTOM_MARKER:
             return self.currentText().strip().upper()
-        if data in PRESET_TAILS:          # пресет: data — имя, хвост берём из конфига
+        if data in PRESET_TAILS:        
             return PRESET_TAILS[data]['tail']
         return data       
 
