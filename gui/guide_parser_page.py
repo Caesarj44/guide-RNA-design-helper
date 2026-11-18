@@ -350,11 +350,16 @@ class GuideParserPage(QWidget):
         self.output_dir = Path(__file__).parent.parent / f'output/{self.session_name}'
         print(f'output dir {self.output_dir}')
 
-        if load_configs('preset_gRNA_tails', load_configs('main_configs', 'selected_tail')) is not None:
-            self.selected_cas_system = load_configs('preset_gRNA_tails', load_configs('main_configs', 'selected_tail'))
-
-        elif load_configs('custom_gRNA_tails', load_configs('main_configs', 'selected_tail')) is not None:
-            self.selected_cas_system = load_configs('custom_gRNA_tails', load_configs('main_configs', 'selected_tail'))['tail']
+        selected_name = load_configs('main_configs', 'selected_tail')
+        cas = (
+            load_configs('preset_gRNA_tails', selected_name)
+            or load_configs('custom_gRNA_tails', selected_name)
+        )
+        if isinstance(cas, str):  # старый формат: сохраняли только последовательность
+            cas = {'tail': cas, 'pam': 'NGG', 'spacer_len': 20, 'cut_distance': '3'}
+        if cas is None:
+            cas = load_configs('preset_gRNA_tails', 'SpCas9')
+        self.selected_cas_system = cas
 
         self.tail = self.selected_cas_system['tail']
         self.spacer_len = self.selected_cas_system['spacer_len']

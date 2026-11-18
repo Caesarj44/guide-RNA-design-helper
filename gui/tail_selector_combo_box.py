@@ -38,13 +38,13 @@ class TailComboBox(QComboBox):
         self._custom_names.clear()
 
         # Пресеты
-        for name,keys  in PRESET_TAILS.items():
-            self.addItem(f'{keys['spacer_len']}bp, {keys['pam']}, {name}')
+        for name, keys in PRESET_TAILS.items():
+            self.addItem(f'{keys["spacer_len"]}bp, {keys["pam"]}, {name}', name)
         # Разделитель
         self.insertSeparator(self.count())
         # Кастомные 
-        for name, seq in custom_tails.items():
-            self.addItem(name, seq)
+        for name, keys in custom_tails.items():
+            self.addItem(name, keys['tail'] if isinstance(keys, dict) else keys)
             self._custom_names.add(name)
         # Разделитель
         self.insertSeparator(self.count())
@@ -65,14 +65,19 @@ class TailComboBox(QComboBox):
             self.setCurrentIndex(0)
             self._add_custom_tail()
             return
-        update_config('main_configs','selected_tail',self.itemText(idx))
-        print(load_configs('main_configs','selected_tail'))
+        if data:
+            update_config('main_configs', 'selected_tail', data)
+        else:
+            update_config('main_configs', 'selected_tail', self.itemText(idx))   
 
     def _add_custom_tail(self):
         dialog = AddTailDialog(self)
         if dialog.exec() == AddTailDialog.Accepted:
             name = dialog.name_input.text().strip()
             seq = dialog.seq_input.text().strip().upper()
+            pam = dialog.pam_input.text().strip().upper()
+            spacer_len = dialog.spacer_len_input.text().strip()
+            cut_site = dialog.cut_site_input.text().strip()
 
             if not name or not seq:
                 return
@@ -88,15 +93,25 @@ class TailComboBox(QComboBox):
             self._custom_names.add(name)
             self.setCurrentIndex(insert_pos)
 
-            update_config('custom_gRNA_tails', name, seq)
-            update_config('main_configs','selected_tail',name)
+            update_config('custom_gRNA_tails', name, {
+                'tail': seq,
+                'pam': pam,
+                'spacer_len': int(spacer_len),
+                'cut_distance': cut_site,
+            })
+            update_config('main_configs', 'selected_tail', name)
 
 
     def get_tail_sequence(self) -> str:
         idx = self.currentIndex()
-        if idx >= 0 and self.itemData(idx) is not None and self.itemData(idx) != _ADD_CUSTOM_MARKER:
-            return self.itemData(idx)
-        return self.currentText().strip().upper()
+        if idx < 0:
+            return ''
+        data = self.itemData(idx)
+        if data is None or data == _ADD_CUSTOM_MARKER:
+            return self.currentText().strip().upper()
+        if data in PRESET_TAILS:          # пресет: data — имя, хвост берём из конфига
+            return PRESET_TAILS[data]['tail']
+        return data       
 
     def is_custom(self, idx: int) -> bool:
         name = self.itemText(idx)

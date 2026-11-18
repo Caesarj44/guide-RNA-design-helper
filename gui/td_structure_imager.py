@@ -61,6 +61,7 @@ class TDStructureImager (QWidget):
         self.start_button.setText('▶  Построение')
         self.start_button.clicked.connect(self._start_grna_modeling)
         self.first_right_row.addWidget(QLabel('Введите последовательность gRNA в окно ниже. До 2000 п.н.'))
+        self.first_right_row.addStretch()
         self.first_right_row.addWidget(self.start_button)
         self.sequence_input = QLineEdit()
         self.sequence_input.setValidator(QRegularExpressionValidator(QRegularExpression('^[ATGCatgc]*$')))
@@ -75,7 +76,14 @@ class TDStructureImager (QWidget):
         self.RNA_info_settings_layout.addLayout(self.input_and_settings_row_layout)
         self.root_layout.addWidget(self.RNA_info_settings_groupbox)
         self.setLayout(self.root_layout)
+        self.MFE_model_radiobutton.setChecked(True)
 
     def _start_grna_modeling(self):
-        grna_sequence = self.sequence_input().text()
+        # grna_sequence = self.sequence_input.text()
+        grna_sequence = 'TGCTCCATACAAGCCAACCAGTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'
+        if self.centroid_model_radiobutton.isChecked:
+            model_type = 'Centroid'
+        elif self.MFE_model_radiobutton.isChecked:
+            model_type = 'MFE'
         print(grna_sequence)
+        print(model_type)
