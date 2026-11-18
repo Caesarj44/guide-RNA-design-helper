@@ -102,13 +102,14 @@ class MainPage(QWidget):
         self.settings_page = SettingsPage()
         #self.crispor_page = CrisporAnalyzerPage()
         self.guide_parser_page = GuideParserPage()
+        self.td_structure_page = TDStructureImager()
         
         self.stack = QStackedWidget()
         self.stack.addWidget(self.home_widget)
         self.stack.addWidget(self.settings_page)
         #self.stack.addWidget(self.crispor_page)
         self.stack.addWidget(self.guide_parser_page)
-        
+        self.stack.addWidget(self.td_structure_page)
 
         self.menu_widget.currentRowChanged.connect(self.stack.setCurrentIndex)
         self.menu_widget.setCurrentRow(0)

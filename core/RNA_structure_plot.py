@@ -18,7 +18,7 @@ SUBTREE_WEIGHT_EXP = 0.3
 
 BASE_COLORS = {
     'A': '#6fbf73',
-    'U': '#f2c46d',
+    'U': "#875e11",
     'T': '#f2c46d',
     'G': '#e57373',
     'C': '#64b5f6',
