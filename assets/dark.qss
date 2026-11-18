@@ -34,6 +34,10 @@ QGroupBox::title {
     font-weight: bold;
 }
 
+QGroupBox::nonetitle {
+    color: transparent
+}
+
 QGroupBox QLabel {
     background-color: transparent;
     color: #cdd6f4;

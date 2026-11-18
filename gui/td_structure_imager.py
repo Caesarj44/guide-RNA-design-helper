@@ -123,6 +123,7 @@ class TDStructureImager (QWidget):
 
 # 2nd row with results
         self.second_row_with_results_groupbox = QGroupBox()
+        self.second_row_with_results_groupbox.setObjectName('nonetitle')
         self.second_row_with_results = QHBoxLayout(self.second_row_with_results_groupbox)
 # left part
         self.left_result_groupbox = QGroupBox("Вторичная структура")
@@ -151,6 +152,7 @@ class TDStructureImager (QWidget):
         self.right_result_layout = QVBoxLayout(self.right_result_groupbox)
     #thermodynamics rows
         self.result_label = QLabel()
+        self.result_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.right_result_layout.addWidget(self.result_label)
 
         self.second_row_with_results.addWidget(self.right_result_groupbox)
