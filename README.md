@@ -49,6 +49,19 @@ Runs locally, with no server connection or execution queues.
 - Accessibility calculation for key spacer positions
 - Structure image saved for each gRNA
 
+### 2D RNA structure viewer
+
+- Folding of an arbitrary RNA sequence (up to 2000 nt) with secondary structure rendering to `.png`
+- Choice of structure model: **MFE** (minimum free energy), **Centroid** (centroid structure), or **MEA** (maximum expected accuracy)
+- Selectable energy parameter sets(ViennaRNA): Turner 2004/1999, Andronescu 2007, Langdon 2018, plus DNA Mathews 1999/2004
+- Thermodynamic readout (ViennaRNA): MFE, structure energy,free energy, MFE frequency, GC content
+- Structure images are saved to the `output` folder
+
+### Appearance
+
+- Dark and light themes (Catppuccin Mocha and Latte palettes), switchable on the settings page
+- Page icons are selected according to the active theme
+
 ### Interactive Genomic Map
 
 - Coordinate-based zoom - from full-sequence overview down to individual nucleotides
