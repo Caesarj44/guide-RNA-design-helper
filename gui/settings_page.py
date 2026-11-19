@@ -22,6 +22,7 @@ from gui.tail_selector_combo_box import TailComboBox
 
 class SettingsPage(QWidget):
     configs_changed = Signal(dict)
+    theme_changed = Signal(bool)
 
     def __init__(self, parent = None):
         super().__init__(parent)
@@ -68,17 +69,12 @@ class SettingsPage(QWidget):
         is_dark = (state == Qt.Checked.value)
         self._apply_theme(is_dark)
         update_config('main_configs', 'dark_theme', is_dark)
+        self.theme_changed.emit(is_dark)
         self._emit_configs()
 
     def _apply_theme(self, is_dark: bool):
         assets = Path(__file__).parent.parent / 'assets'
         qss_file = 'dark.qss' if is_dark else 'light.qss'
-        # if is_dark:
-        #     MainPage().home_item.setIcon(ASSETS / 'cambodian_resort_var2.ico')
-        #     MainPage().settings_item.setIcon(ASSETS / 'gear_symmetry_var2.ico')
-        # if not is_dark:
-        #     MainPage().home_item.setIcon(ASSETS / 'cambodian_resort_var1.ico')
-        #     MainPage().settings_item.setIcon(ASSETS / 'gear_symmetry_var1.ico')
         style = load_style(str(assets / qss_file))
         QApplication.instance().setStyleSheet(style)
 

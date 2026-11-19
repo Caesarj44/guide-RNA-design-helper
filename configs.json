@@ -1,6 +1,6 @@
 {
   "main_configs": {
-    "dark_theme": false,
+    "dark_theme": true,
     "doench_threshold": 50.0,
     "min_gc": 40,
     "max_gc": 70,
@@ -14,5 +14,12 @@
       "cut_distance": "3"
     }
   },
-  "custom_gRNA_tails": {}
+  "custom_gRNA_tails": {
+    "gfgd": {
+      "tail": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGGGG",
+      "pam": "NGG",
+      "spacer_len": 20,
+      "cut_distance": "3"
+    }
+  }
 }

@@ -159,8 +159,8 @@ class TDStructureImager (QWidget):
 
     def _start_grna_modeling(self):
         self.second_row_with_results_groupbox.setVisible(False)
-        #rna_sequence = self.sequence_input.text()
-        rna_sequence = 'GATCAATCACTTGCCTTCAGGTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'
+        rna_sequence = self.sequence_input.text()
+        # rna_sequence = 'GATCAATCACTTGCCTTCAGGTTTCAGAGCTATGCTGGAAACAGCATAGCAAGTTGAAATAAGGCTAGTCCGTTATCAACTTGAAAAAGTGGCACCGAGTCGGTGCTTTT'
         if len(rna_sequence) == 0:
             QMessageBox.warning(
                 self,
