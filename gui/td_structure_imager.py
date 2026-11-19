@@ -123,7 +123,7 @@ class TDStructureImager (QWidget):
 
 # 2nd row with results
         self.second_row_with_results_groupbox = QGroupBox()
-        self.second_row_with_results_groupbox.setObjectName('nonetitle')
+        self.second_row_with_results_groupbox.setObjectName('plainbox')
         self.second_row_with_results = QHBoxLayout(self.second_row_with_results_groupbox)
 # left part
         self.left_result_groupbox = QGroupBox("Вторичная структура")

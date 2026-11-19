@@ -1,6 +1,6 @@
 {
   "main_configs": {
-    "dark_theme": true,
+    "dark_theme": false,
     "doench_threshold": 50.0,
     "min_gc": 40,
     "max_gc": 70,
